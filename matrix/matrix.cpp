@@ -1,27 +1,14 @@
-﻿#include<iostream> 
+﻿#include<iostream>
 using namespace std;
 
+template <class T>
 class Matrix
 {
-    int** ptr;
-    int str;
-    int st;
-public:
-    Matrix(const Matrix& other)
-    {
-        str = other.str;
-        st = other.st;
-        ptr = new int* [str];
-        for (int i = 0; i < str; i++)
-        {
-            ptr[i] = new int[st];
-            for (int j = 0; j < st; j++)
-            {
-                ptr[i][j] = other.ptr[i][j];
-            }
-        }
-    }
+    T** ptr;  // двум. масив
+    int str;  // строки
+    int st;   // столбцы
 
+public:
     Matrix()
     {
         ptr = nullptr;
@@ -32,28 +19,42 @@ public:
     {
         str = _str;
         st = _st;
-        ptr = new int* [str];
+        ptr = new T * [str];
         for (int i = 0; i < str; i++)
         {
-            ptr[i] = new int[st] {0};
+            ptr[i] = new T[st]{ 0 }; // иниц. нулями
         }
     }
 
-    void Index(int x, int y)
+    Matrix(const Matrix& obj)
     {
+        str = obj.str;
+        st = obj.st;
+        ptr = new T * [str];
         for (int i = 0; i < str; i++)
         {
+            ptr[i] = new T[st];
             for (int j = 0; j < st; j++)
             {
-                if (x == i && y == j)
-                {
-                    cout << "Значение по индексу (" << x << ", " << y << ") равно " << ptr[i][j] << endl;
-                }
+                ptr[i][j] = obj.ptr[i][j];
             }
         }
     }
 
-    void Input(int inputValues[3][3])
+    void Index(int x, int y) const
+    {
+        if (x >= 0 && x < str && y >= 0 && y < st)
+        {
+            cout << "Значение по индексу (" << x << ", " << y << ") равно " << ptr[i][j] << endl;
+        }
+        else
+        {
+            cout << "Неверные индексы!\n";
+        }
+    }
+
+    // заполнение
+    void Input(const T inputValues[][3])
     {
         for (int i = 0; i < str; i++)
         {
@@ -64,25 +65,47 @@ public:
         }
     }
 
-    void Print()const
+    void Print() const
     {
-        cout << "Матрица: \n";
+        cout << "Matrix: \n";
         for (int i = 0; i < str; i++)
         {
             for (int j = 0; j < st; j++)
             {
                 cout << ptr[i][j] << "\t";
             }
-            cout << "\n\n";
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+    void Sum(const Matrix& obj) const
+    {
+        if (str == obj.str && st == obj.st)
+        {
+            Matrix rez(str, st);
+            for (int i = 0; i < str; i++)
+            {
+                for (int j = 0; j < st; j++)
+                {
+                    rez.ptr[i][j] = ptr[i][j] + obj.ptr[i][j];
+                }
+            }
+            cout << "Сумма: \n";
+
+            rez.Print();
+        }
+        else
+        {
+            cout << "Недопустимые размеры матрицы для суммы!\n";
         }
     }
 
-    void Mult(const Matrix& obj)const
+    void Mult(const Matrix& obj) const
     {
-        if (str == obj.st)
+        if (st == obj.str)
         {
-            Matrix rez(str, st);
-
+            Matrix rez(str, obj.st);
             for (int i = 0; i < str; i++)
             {
                 for (int j = 0; j < obj.st; j++)
@@ -96,21 +119,9 @@ public:
             cout << "Умножение: \n";
             rez.Print();
         }
-    }
-    void Sum(const Matrix& obj)const
-    {
-        if (str == obj.str && st == obj.st)
+        else
         {
-            Matrix rez(str, st);
-            for (int i = 0; i < str; i++)
-            {
-                for (int j = 0; j < st; j++)
-                {
-                    rez.ptr[i][j] = ptr[i][j] + obj.ptr[i][j];
-                }
-            }
-            cout << "Сума: \n";
-            rez.Print();
+            cout << "Недопустимые размеры матрицы для умножения!\n";
         }
     }
 
@@ -118,41 +129,39 @@ public:
     {
         for (int i = 0; i < str; i++)
         {
-            delete[]ptr[i];
+            delete[] ptr[i];
         }
         delete[] ptr;
-        cout << "деструктор\n";
+
+        cout << "детсруктор\n";
     }
 };
 
 int main()
 {
     setlocale(LC_ALL, "ru");
-    int Values1[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
-    int Values2[3][3] = { {9, 8, 7}, {6, 5, 4}, {3, 2, 1} };
-    int Values3[3][3] = { {1, 1, 1}, {2, 2, 2}, {3, 3, 3} };
+    int values1[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
+    int values2[3][3] = { {9, 8, 7}, {6, 5, 4}, {3, 2, 1} };
+    int values3[3][3] = { {2, 4, 6}, {8, 10, 12}, {14, 16, 18} };
 
-    Matrix obj1(3, 3);
-    Matrix obj2(3, 3);
-    Matrix obj3(3, 3);
+    Matrix<int> obj1(3, 3);
+    Matrix<int> obj2(3, 3);
+    Matrix<int> obj3(3, 3);
+    Matrix<int> obj4(3, 3);
+    Matrix<int> obj5 = obj4;
 
-    Matrix obj4 = obj1;
-
-    obj1.Input(Values1);
-    obj2.Input(Values2);
-    obj3.Input(Values3);
+    obj1.Input(values1);
+    obj2.Input(values2);
+    obj3.Input(values3);
 
     obj1.Print();
-
-    obj1.Index(0, 2);
-
     obj2.Print();
-
     obj3.Print();
-
     obj4.Print();
+    obj5.Print();
 
     obj1.Sum(obj3);
+    obj2.Mult(obj5);
 
-    obj1.Mult(obj2);
+    return 0;
 }
