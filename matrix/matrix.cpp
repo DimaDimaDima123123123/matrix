@@ -1,4 +1,5 @@
 ﻿#include<iostream>
+#include <ctime>
 using namespace std;
 
 template <class T>
@@ -22,7 +23,8 @@ public:
         ptr = new T * [str];
         for (int i = 0; i < str; i++)
         {
-            ptr[i] = new T[st]{ 0 }; // иниц. нулями
+            ptr[i] = new T[st]; 
+
         }
     }
 
@@ -45,7 +47,7 @@ public:
     {
         if (x >= 0 && x < str && y >= 0 && y < st)
         {
-            cout << "Значение по индексу (" << x << ", " << y << ") равно " << ptr[i][j] << endl;
+            cout << "Значение по индексу (" << x << ", " << y << ") равно " << ptr[x][y] << endl;
         }
         else
         {
@@ -54,13 +56,13 @@ public:
     }
 
     // заполнение
-    void Input(const T inputValues[][3])
+    void Input()
     {
         for (int i = 0; i < str; i++)
         {
             for (int j = 0; j < st; j++)
             {
-                ptr[i][j] = inputValues[i][j];
+                ptr[i][j].Input();
             }
         }
     }
@@ -137,10 +139,42 @@ public:
     }
 };
 
+class Point
+{
+    int x;
+    int y;
+    friend ostream& operator<<(ostream& os, const Point& obj);
+
+public:
+    Point()
+    {
+        x = y = 0;
+    }
+    Point(int _x, int _y)
+    {
+        x = _x;
+        y = _y;
+    }
+    void Input()
+    {
+        x = rand() % 100;
+        y = rand() % 100;
+    }
+    void Print() const
+    {
+        cout << " ( " << x << ", " << y << " ) \n";
+    }
+};
+
+ostream& operator<<(ostream& os, const Point& obj)
+{
+    os << "(" << obj.x << ", " << obj.y << ")";
+    return os;
+}
 int main()
 {
     setlocale(LC_ALL, "ru");
-    int values1[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
+   /* int values1[3][3] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
     int values2[3][3] = { {9, 8, 7}, {6, 5, 4}, {3, 2, 1} };
     int values3[3][3] = { {2, 4, 6}, {8, 10, 12}, {14, 16, 18} };
 
@@ -161,7 +195,15 @@ int main()
     obj5.Print();
 
     obj1.Sum(obj3);
-    obj2.Mult(obj5);
+    obj2.Mult(obj5);*/
+
+    srand(time(0)); 
+
+    Matrix<Point> obj6(2, 2);
+    obj6.Input();
+    obj6.Print();
+
+
 
     return 0;
 }
